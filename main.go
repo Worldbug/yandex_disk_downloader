@@ -1,6 +1,3 @@
-// Simple script for download large folders form yandex disk
-// Usage: go run . [URL] [THREAD Count]
-// Example: go run . https://disk.yandex.ru/d/foler_url 3
 package main
 
 import (
