@@ -75,14 +75,12 @@ func describe(key, path string) *YandexResp {
 
 	resp, err := http.Get(base.String())
 	if err != nil {
-
 	}
 
 	yResp := &YandexResp{}
 
 	err = json.NewDecoder(resp.Body).Decode(yResp)
 	if err != nil {
-
 	}
 
 	return yResp
