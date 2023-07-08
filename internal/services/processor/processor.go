@@ -29,12 +29,14 @@ func NewProcessor(
 	threads uint,
 	downloader Downloader,
 	storage Storage,
+	taskSource TaskSource,
 ) *Processor {
 	return &Processor{
 		rootURL:    rootURL,
 		threads:    threads,
 		downloader: downloader,
 		storage:    storage,
+		taskSource: taskSource,
 	}
 }
 
@@ -114,7 +116,7 @@ func (p *Processor) processTask(ctx context.Context, task models.Task) error {
 	}
 	defer file.Close()
 
-	writeTask := models.NewWriteTask(task.Path, task.Name, file, task.MD5)
+	writeTask := models.NewWriteTask(task.Dir, task.Name, file, task.MD5)
 
 	return p.storage.WriteFile(ctx, writeTask)
 }

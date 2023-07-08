@@ -3,6 +3,7 @@ package disk_storage
 import (
 	"context"
 	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"io"
 	"os"
@@ -27,12 +28,12 @@ func (ds *DiskStorage) WriteFile(
 ) error {
 	defer task.Done()
 
-	if ds.md5Verify(task) {
+	if ok, err := ds.md5Verify(task); err == nil || ok {
 		return nil
 	}
 
 	os.MkdirAll(ds.getPath(task), os.ModePerm)
-	out, err := os.Create(path.Join(task.Dir, task.Name))
+	out, err := os.Create(path.Join(ds.getPath(task), task.Name))
 	if err != nil {
 		return err
 	}
@@ -43,8 +44,8 @@ func (ds *DiskStorage) WriteFile(
 		return err
 	}
 
-	if !ds.md5Verify(task) {
-		return errors.New("Failed to verify task")
+	if ok, err := ds.md5Verify(task); err != nil && !ok {
+		return errors.Join(err, errors.New("Failed to verify task"))
 	}
 
 	return nil
@@ -54,10 +55,10 @@ func (ds *DiskStorage) getPath(task models.WriteTask) string {
 	return ds.root + "/" + task.Dir
 }
 
-func (ds *DiskStorage) md5Verify(task models.WriteTask) bool {
-	file, err := os.Open(ds.getPath(task))
+func (ds *DiskStorage) md5Verify(task models.WriteTask) (bool, error) {
+	file, err := os.Open(path.Join(ds.getPath(task), task.Name))
 	if err != nil {
-		return false
+		return false, err
 	}
 	defer file.Close()
 
@@ -65,8 +66,10 @@ func (ds *DiskStorage) md5Verify(task models.WriteTask) bool {
 
 	_, err = io.Copy(hash, file)
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return string(hash.Sum(nil)) == task.MD5
+	sum := hex.EncodeToString(hash.Sum(nil))
+
+	return sum == task.MD5, nil
 }

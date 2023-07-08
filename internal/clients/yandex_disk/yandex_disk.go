@@ -17,7 +17,7 @@ const (
 	rootPath = ""
 )
 
-func newYandexDiskClient() *YandexDiskClient {
+func NewYandexDiskClient() *YandexDiskClient {
 	return &YandexDiskClient{}
 }
 
@@ -36,7 +36,7 @@ func (ydc *YandexDiskClient) ExtractTasks(
 		case <-ctx.Done():
 			return
 		default:
-			err := GetFileTree(ctx, url, tasks)
+			err := getFileTree(ctx, url, tasks)
 			if err != nil {
 				zerolog.Ctx(ctx).
 					Err(err).
@@ -45,11 +45,12 @@ func (ydc *YandexDiskClient) ExtractTasks(
 			}
 		}
 	}()
+	// TODO: ratelimiter
 
 	return tasks, nil
 }
 
-func GetFileTree(
+func getFileTree(
 	ctx context.Context,
 	url string,
 	tasks chan<- models.Task,
