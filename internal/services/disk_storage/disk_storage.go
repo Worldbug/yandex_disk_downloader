@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/md5"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -29,7 +28,7 @@ func (ds *DiskStorage) WriteFile(
 	defer task.Done()
 
 	if ds.md5Verify(task) {
-		return
+		return nil
 	}
 
 	os.MkdirAll(ds.getPath(task), os.ModePerm)
@@ -43,7 +42,7 @@ func (ds *DiskStorage) WriteFile(
 	if err != nil {
 		return err
 	}
-	
+
 	if !ds.md5Verify(task) {
 		return errors.New("Failed to verify task")
 	}
@@ -69,7 +68,5 @@ func (ds *DiskStorage) md5Verify(task models.WriteTask) bool {
 		return false
 	}
 
-	
-	return  TODO: 
-	// fmt.Printf("%s MD5 checksum is %x \n", file.Name(), hash.Sum(nil))
+	return string(hash.Sum(nil)) == task.MD5
 }
