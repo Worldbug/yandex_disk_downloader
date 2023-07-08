@@ -8,6 +8,8 @@ import (
 	"net/url"
 
 	"downloader/internal/models"
+
+	"github.com/rs/zerolog"
 )
 
 const (
@@ -36,7 +38,10 @@ func (ydc *YandexDiskClient) ExtractTasks(
 		default:
 			err := GetFileTree(ctx, url, tasks)
 			if err != nil {
-				// TODO: logger
+				zerolog.Ctx(ctx).
+					Err(err).
+					Str("url", url).
+					Msg("Failed to get file tree")
 			}
 		}
 	}()

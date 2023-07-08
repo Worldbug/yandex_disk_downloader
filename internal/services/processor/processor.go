@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	"downloader/internal/models"
+
+	"github.com/rs/zerolog"
 )
 
 // Downloader Скачивает файлы
@@ -22,22 +24,17 @@ type Storage interface {
 	WriteFile(ctx context.Context, task models.WriteTask) error
 }
 
-// Status Интерфейс для вывод статуса обработки задач
-type Status interface{}
-
 func NewProcessor(
 	rootURL string,
 	threads uint,
 	downloader Downloader,
 	storage Storage,
-	status Status,
 ) *Processor {
 	return &Processor{
 		rootURL:    rootURL,
 		threads:    threads,
 		downloader: downloader,
 		storage:    storage,
-		status:     status,
 	}
 }
 
@@ -48,7 +45,6 @@ type Processor struct {
 	taskSource TaskSource
 	downloader Downloader
 	storage    Storage
-	status     Status
 
 	cancel context.CancelFunc
 }
@@ -59,7 +55,10 @@ func (p *Processor) Run(ctx context.Context) {
 
 	tasks, err := p.taskSource.ExtractTasks(ctx, p.rootURL)
 	if err != nil {
-		// TODO: err log
+		zerolog.Ctx(ctx).
+			Err(err).
+			Str("url", p.rootURL).
+			Msg("failed to extract tasks")
 		return
 	}
 
@@ -97,7 +96,12 @@ func (p *Processor) worker(ctx context.Context, wg *sync.WaitGroup, tasks <-chan
 
 			err := p.processTask(ctx, task)
 			if err != nil {
-				// TODO: error log
+				zerolog.Ctx(ctx).
+					Err(err).
+					Str("name", task.Name).
+					Str("path", task.Path).
+					Str("url", task.URL).
+					Msg("failed to process task")
 			}
 		}
 	}
