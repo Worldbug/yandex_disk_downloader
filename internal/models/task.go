@@ -1,5 +1,10 @@
 package models
 
+import (
+	"net/http"
+	"strconv"
+)
+
 func NewTask(
 	Path string,
 	Name string,
@@ -22,4 +27,14 @@ type Task struct {
 	URL  string
 	Dir  string
 	MD5  string
+}
+
+func (t *Task) GetSize() int64 {
+	resp, err := http.Get(t.URL)
+	if err != nil {
+		return 0
+	}
+
+	size, _ := strconv.ParseInt(resp.Header.Get("Content-Length"), 10, 64)
+	return size
 }

@@ -8,6 +8,7 @@ import (
 	"downloader/internal/clients/yandex_disk"
 	"downloader/internal/services/disk_storage"
 	"downloader/internal/services/downloader"
+	"downloader/internal/services/monitoring/cli_monitor"
 	"downloader/internal/services/processor"
 
 	"github.com/rs/zerolog"
@@ -52,14 +53,15 @@ var cli = &cobra.Command{
 		downloader := downloader.NewHTTPDownloader()
 		disk_storage := disk_storage.NewDiskStorage(".")
 		yandexCli := yandex_disk.NewYandexDiskClient()
+		cliMonitor := cli_monitor.NewCliMonitor()
 
 		processor.NewProcessor(
-			url.String(),
 			uint(threads),
 			downloader,
 			disk_storage,
-			yandexCli).
-			Run(ctx)
+			yandexCli,
+			cliMonitor,
+		).DownloadDirectory(ctx, url.String())
 	},
 }
 

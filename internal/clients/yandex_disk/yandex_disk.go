@@ -45,7 +45,6 @@ func (ydc *YandexDiskClient) ExtractTasks(
 			}
 		}
 	}()
-	// TODO: ratelimiter
 
 	return tasks, nil
 }
@@ -90,6 +89,7 @@ func introspectPath(url, path, dir string, tasks chan<- models.Task) error {
 	return nil
 }
 
+// TODO: ratelimiter
 func describe(key, path string) (*YandexResp, error) {
 	base, _ := url.Parse(base_url)
 	params := url.Values{}

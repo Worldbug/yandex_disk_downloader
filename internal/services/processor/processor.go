@@ -24,53 +24,48 @@ type Storage interface {
 	WriteFile(ctx context.Context, task models.WriteTask) error
 }
 
+// Monitor Врапер для отслеживания прогресса загрузки файла
+type Monitor interface {
+	Wrap(ctx context.Context, task models.Task, input io.ReadCloser) io.ReadCloser
+}
+
 func NewProcessor(
-	rootURL string,
 	threads uint,
 	downloader Downloader,
 	storage Storage,
 	taskSource TaskSource,
+	monitor Monitor,
 ) *Processor {
 	return &Processor{
-		rootURL:    rootURL,
 		threads:    threads,
 		downloader: downloader,
 		storage:    storage,
 		taskSource: taskSource,
+		monitor:    monitor,
 	}
 }
 
 type Processor struct {
-	rootURL string
 	threads uint
 
 	taskSource TaskSource
 	downloader Downloader
+	monitor    Monitor
 	storage    Storage
-
-	cancel context.CancelFunc
 }
 
-func (p *Processor) Run(ctx context.Context) {
-	ctx, cancel := context.WithCancel(ctx)
-	p.cancel = cancel
-
-	tasks, err := p.taskSource.ExtractTasks(ctx, p.rootURL)
+func (p *Processor) DownloadDirectory(ctx context.Context, url string) error {
+	tasks, err := p.taskSource.ExtractTasks(ctx, url)
 	if err != nil {
 		zerolog.Ctx(ctx).
 			Err(err).
-			Str("url", p.rootURL).
+			Str("url", url).
 			Msg("failed to extract tasks")
-		return
+		return err
 	}
 
 	p.processTasks(ctx, p.threads, tasks)
-}
-
-func (p *Processor) Stop() {
-	if p.cancel != nil {
-		p.cancel()
-	}
+	return nil
 }
 
 func (p *Processor) processTasks(ctx context.Context, count uint, tasks <-chan models.Task) {
@@ -115,6 +110,9 @@ func (p *Processor) processTask(ctx context.Context, task models.Task) error {
 		return err
 	}
 	defer file.Close()
+
+	// TODO: wrap wireTask, not task
+	file = p.monitor.Wrap(ctx, task, file)
 
 	writeTask := models.NewWriteTask(task.Dir, task.Name, file, task.MD5)
 
