@@ -31,7 +31,8 @@ func main() {
 
 func newDownloadCMD() *cobra.Command {
 	return &cobra.Command{
-		Use: "download",
+		Use:   "download",
+		Short: "downloader download [Yandex disk URL] [Threads count]",
 		Run: func(cmd *cobra.Command, args []string) {
 			ctx := cmd.Context()
 
@@ -77,7 +78,8 @@ func newDownloadCMD() *cobra.Command {
 
 func newDaemonCMD() *cobra.Command {
 	return &cobra.Command{
-		Use: "run",
+		Use:   "run",
+		Short: "downloader run",
 		Run: func(cmd *cobra.Command, args []string) {
 			// ctx := cmd.Context()
 
