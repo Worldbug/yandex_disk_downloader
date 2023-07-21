@@ -50,7 +50,11 @@ type Processor struct {
 	storage    Storage
 }
 
-func (p *Processor) DownloadDirectory(ctx context.Context, threads uint, url string) error {
+func (p *Processor) DownloadDirectory(
+	ctx context.Context,
+	threads uint,
+	url string,
+) error {
 	tasks, err := p.taskSource.ExtractTasks(ctx, url)
 	if err != nil {
 		return err
@@ -60,7 +64,11 @@ func (p *Processor) DownloadDirectory(ctx context.Context, threads uint, url str
 	return nil
 }
 
-func (p *Processor) processTasks(ctx context.Context, count uint, tasks <-chan models.Task) {
+func (p *Processor) processTasks(
+	ctx context.Context,
+	count uint,
+	tasks <-chan models.Task,
+) {
 	wg := &sync.WaitGroup{}
 	wg.Add(int(count))
 
@@ -71,7 +79,11 @@ func (p *Processor) processTasks(ctx context.Context, count uint, tasks <-chan m
 	wg.Wait()
 }
 
-func (p *Processor) worker(ctx context.Context, wg *sync.WaitGroup, tasks <-chan models.Task) {
+func (p *Processor) worker(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	tasks <-chan models.Task,
+) {
 	defer wg.Done()
 
 	for {

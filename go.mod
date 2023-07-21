@@ -7,12 +7,10 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.5.0
 	github.com/vbauerster/mpb v3.4.0+incompatible
-	go.uber.org/ratelimit v0.2.0
 )
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
-	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -24,9 +22,8 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
-	github.com/pyroscope-io/client v0.7.1 // indirect
-	github.com/pyroscope-io/godeltaprof v0.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20220131195533-30dcbda58838 // indirect
 	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect

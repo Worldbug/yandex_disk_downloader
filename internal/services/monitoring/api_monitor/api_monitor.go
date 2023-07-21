@@ -21,3 +21,5 @@ func (sm *StreamMonitor) Wrap(
 	// TODO:
 	return input
 }
+
+func (sm *StreamMonitor) StatusStream(ctx context.Context) {}
