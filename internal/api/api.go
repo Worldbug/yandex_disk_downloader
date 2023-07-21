@@ -7,7 +7,7 @@ import (
 )
 
 type Downloader interface {
-	AddTask(ctx context.Context, url string) error
+	AddTask(ctx context.Context, threads uint, url string) error
 }
 
 type Monitor interface {
@@ -17,18 +17,24 @@ type Monitor interface {
 func NewAPI(
 	downloader Downloader,
 	monitor Monitor,
+	router *gin.Engine,
 ) *API {
 	return &API{
 		downloader: downloader,
 		monitor:    monitor,
+		router:     router,
 	}
 }
 
 type API struct {
 	downloader Downloader
 	monitor    Monitor
+
+	router *gin.Engine
 }
 
-func (api *API) CreateJob(ctx *gin.Context)          {}
-func (api *API) GetJobStatusStream(ctx *gin.Context) {}
-func (api *API) GetJobsList(ctx *gin.Context)        {}
+func (api *API) Run(ctx context.Context) {
+	apiHandlers := api.router.Group("/api")
+	apiHandlers.POST("/create_task", api.createTask)
+	apiHandlers.GET("/task_status", api.taskStatus)
+}

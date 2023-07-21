@@ -35,19 +35,19 @@ var cli = &cobra.Command{
 
 		if len(os.Args) < 3 {
 			zerolog.Ctx(ctx).Error().Msg("Not enoughs args ")
-			return
+			os.Exit(1)
 		}
 
 		url, err := url.Parse(os.Args[2])
 		if err != nil {
 			zerolog.Ctx(ctx).Err(err).Msg("Wrong url format")
-			return
+			os.Exit(1)
 		}
 
 		threads, err := strconv.Atoi(os.Args[3])
 		if err != nil {
 			zerolog.Ctx(ctx).Err(err).Msg("Can`t parse thread count arg")
-			return
+			os.Exit(1)
 		}
 
 		downloader := downloader.NewHTTPDownloader()
@@ -55,14 +55,24 @@ var cli = &cobra.Command{
 		yandexCli := yandex_disk.NewYandexDiskClient()
 		cliMonitor := cli_monitor.NewCliMonitor()
 
-		processor.NewProcessor(
+		err = processor.NewProcessor(
 			uint(threads),
 			downloader,
 			disk_storage,
 			yandexCli,
 			cliMonitor,
 		).DownloadDirectory(ctx, url.String())
+		if err != nil {
+			zerolog.Ctx(ctx).
+				Err(err).
+				Str("url", url.String()).
+				Msg("failed to extract tasks")
+			os.Exit(1)
+		}
 	},
 }
 
-var daemon = &cobra.Command{}
+var daemon = &cobra.Command{
+	Use: "run",
+	Run: func(cmd *cobra.Command, args []string) {},
+}

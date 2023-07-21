@@ -57,10 +57,6 @@ type Processor struct {
 func (p *Processor) DownloadDirectory(ctx context.Context, url string) error {
 	tasks, err := p.taskSource.ExtractTasks(ctx, url)
 	if err != nil {
-		zerolog.Ctx(ctx).
-			Err(err).
-			Str("url", url).
-			Msg("failed to extract tasks")
 		return err
 	}
 
