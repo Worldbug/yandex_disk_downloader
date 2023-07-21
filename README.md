@@ -1,11 +1,21 @@
+# Yandex disk downloader
+
 Simple script for download large folders form yandex disk
 
-Usage:
+## Usage
+
 ```bash
-go run . [URL] [thread count]
+go run . download [URL] [thread count]
 ```
 
-Example: 
+## Example
+
 ```bash
- go run . https://disk.yandex.ru/d/foler_url 3
- ```
+go run . download https://disk.yandex.ru/d/foler_url 3
+```
+
+## Todo
+
+- fast md5 checking
+- WebUI (like transmission)
+- Custom std status
