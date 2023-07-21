@@ -7,6 +7,10 @@ import (
 	"downloader/internal/models"
 )
 
+func NewStreamMonitor() *StreamMonitor {
+	return &StreamMonitor{}
+}
+
 type StreamMonitor struct{}
 
 func (sm *StreamMonitor) Wrap(

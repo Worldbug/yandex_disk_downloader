@@ -30,14 +30,12 @@ type Monitor interface {
 }
 
 func NewProcessor(
-	threads uint,
 	downloader Downloader,
 	storage Storage,
 	taskSource TaskSource,
 	monitor Monitor,
 ) *Processor {
 	return &Processor{
-		threads:    threads,
 		downloader: downloader,
 		storage:    storage,
 		taskSource: taskSource,
@@ -46,21 +44,19 @@ func NewProcessor(
 }
 
 type Processor struct {
-	threads uint
-
 	taskSource TaskSource
 	downloader Downloader
 	monitor    Monitor
 	storage    Storage
 }
 
-func (p *Processor) DownloadDirectory(ctx context.Context, url string) error {
+func (p *Processor) DownloadDirectory(ctx context.Context, threads uint, url string) error {
 	tasks, err := p.taskSource.ExtractTasks(ctx, url)
 	if err != nil {
 		return err
 	}
 
-	p.processTasks(ctx, p.threads, tasks)
+	p.processTasks(ctx, threads, tasks)
 	return nil
 }
 
